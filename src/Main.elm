@@ -17,8 +17,6 @@ import Url.Parser exposing ((</>), Parser, int, map, oneOf, s, string, top)
 
 
 -- MAIN
-
-
 main : Program (Maybe Model) Model Msg
 main =
     Browser.application
