@@ -1,6 +1,6 @@
-port module Cache exposing (cache)
+-- port module Cache exposing (cache)
 
-import Json.Encode as E
+-- import Json.Encode as E
 
 
-port cache : E.Value -> Cmd msg
+-- port cache : E.Value -> Cmd msg

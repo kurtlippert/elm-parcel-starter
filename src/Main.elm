@@ -1,9 +1,9 @@
-module Main exposing (Model, Msg(..), init, main, update, view)
+port module Main exposing (Model, Msg(..), init, main, update, view)
 
 import Base64
 import Browser
 import Browser.Navigation as Nav
-import Cache exposing (..)
+-- import Cache exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
@@ -19,18 +19,32 @@ import Url.Parser exposing ((</>), Parser, int, map, oneOf, s, string, top)
 -- MAIN
 
 
-main : Program () Model Msg
+main : Program (Maybe Model) Model Msg
 main =
     Browser.application
         { init = init
         , view = view
-        , update = update
+        , update = updateWithStorage
         , subscriptions = subscriptions
         , onUrlChange = UrlChanged
         , onUrlRequest = LinkClicked
         }
 
 
+port setStorage : Json.Encode.Value -> Cmd msg
+
+{-| We want to `setStorage` on every update. This function adds the setStorage
+command for every step of the update function
+-}
+updateWithStorage : Msg -> Model -> ( Model, Cmd Msg )
+updateWithStorage msg model =
+    let
+        ( newModel, cmds ) =
+            update msg model
+    in
+        ( newModel
+        , Cmd.batch [ setStorage newModel, cmds ]
+        )
 
 -- MODEL
 
@@ -250,6 +264,11 @@ userEncoder user =
         , ( "membership", membershipEncoder user.membership )
         ]
 
+httpRequestEncoder : HttpRequest -> Json.Encode.Value
+httpRequestEncoder httpRequest =
+    Json.Encode.object
+        [ ]
+
 
 
 -- tokenUserEncoder : String -> User -> Json.Encode.Value
@@ -356,10 +375,11 @@ update msg model =
                                     --     Nothing ->
                                     --         ( model, Cmd.none )
                                     ( { model | httpRequest = Success <| LoginResponse payload, loginFailedMessage = "", loginSuccess = True }
-                                    , Cmd.batch
-                                        [ Cache.cache <| userEncoder user
-                                        , Nav.pushUrl model.key "/"
-                                        ]
+                                    , Nav.pushUrl model.key "/"
+                                    -- , Cmd.batch
+                                    --     [ Cache.cache <| userEncoder user
+                                    --     , Nav.pushUrl model.key "/"
+                                    --     ]
                                     )
 
                                 -- No message, but unable to get user (when would this happen?)
