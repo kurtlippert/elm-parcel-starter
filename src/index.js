@@ -1,13 +1,12 @@
 import { Elm } from './Main.elm'
+import "bootstrap-utilities"
 
 if (module.hot) {
-    module.hot.dispose(() => {
-        window.location.reload();
-    });
+  module.hot.accept()
 }
 
 const app = Elm.Main.init({
-  node: document.querySelector('main')
+  node: document.getElementById('root')
 })
 
 app.ports.printModel.subscribe(model => console.log(model))

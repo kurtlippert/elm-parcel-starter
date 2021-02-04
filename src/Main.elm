@@ -2,23 +2,53 @@ port module Main exposing (main)
 
 import Browser
 import Browser.Navigation as Nav
+import Debounce exposing (Debounce)
 import Html
     exposing
-        ( Html, a, b, br, button, div
-        , figure, hr, img, input, nav, p
-        , span, table, tbody, td, text
-        , th, thead, time, tr
+        ( Html
+        , a
+        , b
+        , br
+        , button
+        , div
+        , figure
+        , hr
+        , img
+        , input
+        , nav
+        , p
+        , span
+        , table
+        , tbody
+        , td
+        , text
+        , th
+        , thead
+        , time
+        , tr
         )
 import Html.Attributes
     exposing
-        ( alt, attribute, class, classList
-        , datetime, height, href, id, placeholder
-        , scope, src, type_, width
+        ( alt
+        , attribute
+        , class
+        , classList
+        , datetime
+        , height
+        , href
+        , id
+        , placeholder
+        , scope
+        , src
+        , type_
+        , value
+        , width
         )
 import Html.Events exposing (onClick, onInput)
 import Http
 import Json.Decode exposing (Decoder, field, string)
 import Json.Encode
+import Task exposing (Task)
 import Url
 import Url.Parser exposing ((</>), Parser, int, map, oneOf, s, string, top)
 
@@ -68,6 +98,9 @@ type Route
 type alias Model =
     { httpRequest : HttpRequest
     , users : List User
+    , userSearchInput : String
+    , userSearchDebouncer : Debounce String
+    , report : List String
     , selectedUser : Maybe User
     , burgerMenuActive : Bool
     , gists : List Gist
@@ -89,7 +122,19 @@ emptyUser =
 
 init : () -> Url.Url -> Nav.Key -> ( Model, Cmd Msg )
 init _ url key =
-    ( Model Loading [] Nothing False [] key url, getUsersRequest 0 5 "" )
+    ( { httpRequest = Loading
+      , users = []
+      , userSearchDebouncer = Debounce.init
+      , userSearchInput = ""
+      , report = []
+      , selectedUser = Nothing
+      , burgerMenuActive = False
+      , gists = []
+      , key = key
+      , url = url
+      }
+    , getUsersRequest 0 5 ""
+    )
 
 
 
@@ -318,6 +363,9 @@ type Msg
     | LinkClicked Browser.UrlRequest
     | UrlChanged Url.Url
     | GetUsers String
+    | GetUsersInput String
+    | GetUsersInputDebounce Debounce.Msg
+    | Saved String
     | GotUsers (Result Http.Error (List User))
     | GetGists
     | GotGists (Result Http.Error (List Gist))
@@ -325,6 +373,16 @@ type Msg
     | UnSelectUser
     | ToggleBurgerMenu
     | ChangeHttpRequestStatus HttpRequest
+
+
+{-| This defines how the debouncer should work.
+Choose the strategy for your use case.
+-}
+debounceConfig : (Debounce.Msg -> Msg) -> Debounce.Config Msg
+debounceConfig debounceMsg =
+    { strategy = Debounce.later 700
+    , transform = debounceMsg
+    }
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -367,6 +425,35 @@ update msg model =
                     Debug.log "gettingUsers" query
             in
             ( { model | httpRequest = Loading }, getUsersRequest 0 5 query )
+
+        GetUsersInput userSearchInput ->
+            let
+                ( newDebouncer, cmd ) =
+                    Debounce.push
+                        (debounceConfig GetUsersInputDebounce)
+                        userSearchInput
+                        model.userSearchDebouncer
+            in
+            ( { model
+                | userSearchInput = userSearchInput
+                , userSearchDebouncer = newDebouncer
+              }
+            , cmd
+            )
+
+        -- This is where commands are actually sent.
+        -- The logic can be dependent on the current model.
+        -- You can also use all the accumulated values.
+        GetUsersInputDebounce msg_ ->
+            let
+                ( debouncer, cmd ) =
+                    Debounce.update
+                        (debounceConfig GetUsersInputDebounce)
+                        (Debounce.takeLast save)
+                        msg_
+                        model.userSearchDebouncer
+            in
+            ( { model | userSearchDebouncer = debouncer }, cmd )
 
         GotUsers response ->
             case response of
@@ -414,6 +501,18 @@ update msg model =
 
         ToggleBurgerMenu ->
             ( { model | burgerMenuActive = not model.burgerMenuActive }, Cmd.none )
+
+        Saved s ->
+            ( model, getUsersRequest 0 5 model.userSearchInput )
+
+
+
+-- SAVE (for debouncer)
+
+
+save : String -> Cmd Msg
+save s =
+    Task.perform Saved (Task.succeed s)
 
 
 
@@ -471,7 +570,7 @@ userTable : Model -> List String -> Html Msg
 userTable model classes =
     div [ class <| String.join " " classes ]
         [ div [ class "form-group" ]
-            [ input [ class "input", placeholder "Filter", type_ "text", onInput GetUsers ]
+            [ input [ class "input", placeholder "Filter", type_ "text", value model.userSearchInput, onInput GetUsersInput ]
                 []
             ]
         , table [ class "table is-hoverable is-fullwidth mt-3" ]
@@ -566,12 +665,17 @@ notification : Model -> Html Msg
 notification model =
     case model.httpRequest of
         Failure message ->
-            div [ classList
+            div
+                [ classList
                     [ ( "notification is-danger", True )
-                    , ( "d-none", model.httpRequest |> isNotFailure )
+                    , ( "d-none", isNotFailure model.httpRequest )
                     ]
                 ]
-                [ button [ class "delete", onClick <| ChangeHttpRequestStatus NoOp ] []
+                [ button
+                    [ class "delete"
+                    , onClick <| ChangeHttpRequestStatus NoOp
+                    ]
+                    []
                 , text message
                 ]
 
@@ -587,10 +691,16 @@ mainContent : Model -> Route -> Html Msg
 mainContent model route =
     case route of
         Home ->
-            div [] [ text "Welcome Home!", userTable model [ "invisible" ] ]
+            div []
+                [ text "Welcome Home!"
+                , userTable model [ "invisible" ]
+                ]
 
         About ->
-            div [] [ text "This is the 'About' page", userTable model [ "invisible" ] ]
+            div []
+                [ text "This is the 'About' page"
+                , userTable model [ "invisible" ]
+                ]
 
         Users ->
             userTable model []
@@ -599,7 +709,7 @@ mainContent model route =
             div []
                 [ text <| "User ID: " ++ String.fromInt userId
                 , br [] []
-                , text "(in future, make http request to get user info"
+                , text "(in future, make http request to get user info)"
                 ]
 
         _ ->
