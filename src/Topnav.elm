@@ -7,7 +7,7 @@ import Element.Border as Border
 import Element.Font as Font exposing (alignRight)
 import Element.Input as Input
 import Html exposing (Html)
-import Model exposing (Model(..))
+import Model exposing (Model)
 import Msg exposing (Msg(..))
 import String exposing (padRight)
 
