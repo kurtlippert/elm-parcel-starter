@@ -1,5 +1,4 @@
 import { Elm } from './src/Main.elm'
-// import { Elm } from './src/Uitest.elm'
 
 if (module.hot) {
   module.hot.accept()
