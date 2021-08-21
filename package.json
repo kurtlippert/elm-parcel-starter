@@ -1,24 +1,23 @@
 {
   "name": "elm-parcel-starter",
   "version": "1.0.0",
-  "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "start": "parcel src/index.html",
+    "start": "parcel index.html",
+    "build": "parcel build index.html",
+    "purgecss": "purgecss --css dist/index.*.css --content dist/index.*.js",
     "elm": "elm-json",
+    "format": "elm-format",
+    "test": "elm-test",
     "clean": "rm -rf node_modules elm-stuff dist .cache .parcel-cache"
   },
-  "dependencies": {
-    "bootstrap-utilities": "4.1.3",
-    "bulma": "0.9.3"
-  },
   "devDependencies": {
+    "@parcel/transformer-elm": "2.0.0-rc.0",
     "elm": "0.19.1-5",
     "elm-format": "0.8.5",
     "elm-hot": "1.1.6",
     "elm-json": "0.2.10",
     "node-elm-compiler": "5.0.6",
-    "parcel": "2.0.0-rc.0",
-    "sass": "1.37.5"
+    "parcel": "2.0.0-rc.0"
   }
 }

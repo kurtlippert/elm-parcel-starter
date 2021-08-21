@@ -195,10 +195,11 @@ getUsersRequest skip take filter =
                 , usersFilterDecoder
                 )
     in
-    let
-        _ =
-            Debug.log "url" <| Url.toString url
-    in
+    -- let
+    --     _ =
+            -- Debug.log "url" <| Url.toString url
+            -- _ = 'nothing'
+    -- in
     Http.request
         { method = "GET"
         , headers = []
@@ -395,10 +396,10 @@ update msg model =
             ( model, printModel <| modelEncoder model )
 
         PrintMessage someInput ->
-            let
-                _ =
-                    Debug.log "input" someInput
-            in
+            -- let
+            --     _ =
+            --         Debug.log "input" someInput
+            -- in
             ( model, Cmd.none )
 
         LinkClicked urlRequest ->
@@ -420,10 +421,10 @@ update msg model =
                     )
 
         GetUsers query ->
-            let
-                _ =
-                    Debug.log "gettingUsers" query
-            in
+            -- let
+            --     _ =
+            --         Debug.log "gettingUsers" query
+            -- in
             ( { model | httpRequest = Loading }, getUsersRequest 0 5 query )
 
         GetUsersInput userSearchInput ->
@@ -458,17 +459,17 @@ update msg model =
         GotUsers response ->
             case response of
                 Ok users ->
-                    let
-                        _ =
-                            Debug.log "gotUsers" <| List.length users
-                    in
+                    -- let
+                    --     _ =
+                    --         Debug.log "gotUsers" <| List.length users
+                    -- in
                     ( { model | httpRequest = Success, users = users }, Cmd.none )
 
                 Err err ->
-                    let
-                        _ =
-                            Debug.log "Error getting users" err
-                    in
+                    -- let
+                    --     _ =
+                    --         Debug.log "Error getting users" err
+                    -- in
                     case err of
                         Http.BadBody errorMessage ->
                             ( { model | httpRequest = Failure errorMessage }
@@ -476,10 +477,10 @@ update msg model =
                             )
 
                         _ ->
-                            let
-                                _ =
-                                    Debug.log "Error getting users" err
-                            in
+                            -- let
+                            --     _ =
+                            --         Debug.log "Error getting users" err
+                            -- in
                             ( model, Cmd.none )
 
         GetGists ->
@@ -711,6 +712,10 @@ mainContent model route =
                 , br [] []
                 , text "(in future, make http request to get user info)"
                 ]
+
+        -- ElmUiTest ->
+        --     div []
+        --         [ text "We're "]
 
         _ ->
             div [] [ text "Page Not Found!", userTable model [ "invisible" ] ]
