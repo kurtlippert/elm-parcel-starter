@@ -4,7 +4,12 @@ module Main exposing (main)
 
 import Browser
 import Browser.Navigation as Nav exposing (Key)
+import Content exposing (content)
 import Debounce exposing (Debounce)
+import Element exposing (fill, layout, minimum, row, width)
+import Element.Background as Background
+import Element.Border as Border
+import Element.Font as Font
 import Html
     exposing
         ( Html
@@ -95,7 +100,6 @@ emptyUser =
     , url = ""
     , login = ""
     , avatarUrl = ""
-    , gistsUrl = ""
     , reposUrl = ""
     }
 
@@ -197,12 +201,11 @@ getUsersRequest skip take filter =
 
 userDecoder : Decoder User
 userDecoder =
-    Json.Decode.map6 User
+    Json.Decode.map5 User
         (Json.Decode.field "id" Json.Decode.int)
         (Json.Decode.field "url" Json.Decode.string)
         (Json.Decode.field "login" Json.Decode.string)
         (Json.Decode.field "avatar_url" Json.Decode.string)
-        (Json.Decode.field "gists_url" Json.Decode.string)
         (Json.Decode.field "repos_url" Json.Decode.string)
 
 
@@ -223,7 +226,6 @@ userEncoder user =
         , ( "url", Json.Encode.string user.url )
         , ( "login", Json.Encode.string user.login )
         , ( "avatar_url", Json.Encode.string user.avatarUrl )
-        , ( "gists_url", Json.Encode.string user.gistsUrl )
         , ( "repos_url", Json.Encode.string user.reposUrl )
         ]
 
@@ -326,7 +328,7 @@ update msg model =
                 ( debouncer, cmd ) =
                     Debounce.update
                         (debounceConfig UserSearchInputDebouncer)
-                        (Debounce.takeLast save)
+                        (Debounce.takeLast saveDebouncedUserSearchInput)
                         msg_
                         model.userSearchInputDebouncer
             in
@@ -381,8 +383,8 @@ update msg model =
 -- SAVE (for debouncer)
 
 
-save : String -> Cmd Msg
-save s =
+saveDebouncedUserSearchInput : String -> Cmd Msg
+saveDebouncedUserSearchInput s =
     Task.perform SavedDebouncedUserSearchInput (Task.succeed s)
 
 
@@ -596,6 +598,8 @@ view model =
     , body =
         [ topNav model
 
+        -- , content model
+        -- , mainContent model Route.Home
         -- , div [ class "container m-5" ]
         --     [ text "The current URL is: "
         --     , b [] [ text (Url.toString model.url) ]

@@ -1,21 +1,11 @@
 module Button exposing (..)
 
-import Browser
 import Element exposing (..)
 import Element.Background as Background
 import Element.Border as Border
-import Element.Events as Events
 import Element.Font as Font
 import Element.Input as Input
-import Html exposing (Html)
 import Msg exposing (Msg(..))
-
-
-
--- type Msg
---     = ClickMsg
--- type Options
---     = RightAligned
 
 
 view : List (Attribute Msg) -> String -> String -> Element Msg
@@ -23,16 +13,8 @@ view moreAttributes buttonText id =
     Input.button
         (List.concat
             [ moreAttributes
-            , [ -- [ padding 10
-                --   Border.width 3
-                paddingXY 10 20
+            , [ paddingXY 10 20
 
-              -- , Element.
-              -- , Element.fill
-              -- , Border.rounded 6
-              -- , Border.color color.blue
-              -- , Background.color color.lightBlue
-              -- , Font.variant Font.smallCaps
               -- The order of mouseDown/mouseOver can be significant when changing
               -- the same attribute in both
               , mouseDown
@@ -51,10 +33,6 @@ view moreAttributes buttonText id =
             ]
         )
         { onPress = Just (ClickedButton id), label = text buttonText }
-
-
-
--- { onPress = Just UserPressedButton, label = text buttonText }
 
 
 color =

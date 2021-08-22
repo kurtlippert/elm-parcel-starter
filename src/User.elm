@@ -6,6 +6,5 @@ type alias User =
     , url : String
     , login : String
     , avatarUrl : String
-    , gistsUrl : String
     , reposUrl : String
     }
