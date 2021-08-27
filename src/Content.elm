@@ -2,25 +2,20 @@ module Content exposing (..)
 
 import Element exposing (..)
 import Element.Background as Background
-import Element.Border as Border
-import Element.Font as Font exposing (alignRight)
-import Element.Input as Input
+import Element.Font as Font
+import Model exposing (Model)
 
 
+content : Model -> Element msg
 content model =
-    layout [ width <| minimum 600 fill, height fill ] <|
-        row
-            [ Font.color (Element.rgb 0 0 0)
-            , Font.size 18
-            , Font.family
-                [ Font.typeface "Open Sans"
-                , Font.sansSerif
-                ]
-            , width fill
-            , centerX
-            , Background.color color.gainsboro
-            ]
-            []
+    row [ width fill, height fill ]
+        [ -- [ el [ width <| px model.screenWidth, height <| px 200, Background.color color.lightBlue ] <|
+          --     el [ alignRight, width <| px 50, height <| px 150, Background.color color.gainsboro ] <|
+          --         text "first"
+          el [ width fill, height <| px 200, Background.color color.white ] <|
+            el [ alignRight ] <|
+                text "main content"
+        ]
 
 
 color =

@@ -18,4 +18,5 @@ type alias Model =
     , key : Key
     , url : Url
     , screenWidth : Int
+    , loginActive : Bool
     }
