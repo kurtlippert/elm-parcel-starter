@@ -8,8 +8,8 @@ import Element.Input as Input
 import Msg exposing (Msg(..))
 
 
-button : List (Attribute Msg) -> String -> Msg -> Element Msg
-button moreAttributes buttonText msg =
+button : List (Attribute Msg) -> Element Msg -> Msg -> Element Msg
+button moreAttributes element msg =
     Input.button
         (List.concat
             [ moreAttributes
@@ -32,7 +32,7 @@ button moreAttributes buttonText msg =
               ]
             ]
         )
-        { onPress = Just msg, label = text buttonText }
+        { onPress = Just msg, label = element }
 
 
 color =

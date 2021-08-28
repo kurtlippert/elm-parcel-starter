@@ -74,6 +74,10 @@ init flags url key =
       , url = url
       , screenWidth = flags.windowWidth
       , loginActive = False
+      , moreDropdownActive = False
+      , userNameText = ""
+      , passwordText = ""
+      , showPassword = False
       }
     , getUsersRequest 0 5 ""
     )
@@ -215,8 +219,20 @@ update msg model =
         NavigateTo href ->
             ( model, Nav.pushUrl model.key href )
 
-        ShowLogin ->
-            ( { model | loginActive = not model.loginActive }, Cmd.none )
+        ShowLogin trueOrFalse ->
+            ( { model | loginActive = trueOrFalse }, Cmd.none )
+
+        ToggleShowPassword trueOrFalse ->
+            ( { model | showPassword = trueOrFalse }, Cmd.none )
+
+        ShowMoreDropdown trueOrFalse ->
+            ( { model | moreDropdownActive = trueOrFalse }, Cmd.none )
+
+        TypedUsername s ->
+            ( { model | userNameText = s }, Cmd.none )
+
+        TypedPassword s ->
+            ( { model | passwordText = s }, Cmd.none )
 
         ChangedUrl url ->
             case fromUrl url of

@@ -19,4 +19,8 @@ type alias Model =
     , url : Url
     , screenWidth : Int
     , loginActive : Bool
+    , moreDropdownActive : Bool
+    , userNameText : String
+    , passwordText : String
+    , showPassword : Bool
     }

@@ -15,7 +15,10 @@ type Msg
     | ClickedLink UrlRequest
     | ChangedUrl Url
     | NavigateTo String
-    | ShowLogin
+    | ShowLogin Bool
+    | ShowMoreDropdown Bool
+    | TypedUsername String
+    | TypedPassword String
     | GettingUsers String
     | GotUsers (Result Http.Error (List User))
     | UserSearchInputChanged String
@@ -25,4 +28,5 @@ type Msg
     | SelectedUser User
     | UnSelectedUser
     | ToggledBurgerMenu
+    | ToggleShowPassword Bool
     | ChangedHttpRequestStatus HttpRequest

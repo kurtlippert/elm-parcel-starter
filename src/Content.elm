@@ -13,7 +13,7 @@ content model =
           --     el [ alignRight, width <| px 50, height <| px 150, Background.color color.gainsboro ] <|
           --         text "first"
           el [ width fill, height <| px 200, Background.color color.white ] <|
-            el [ alignRight ] <|
+            el [ centerX, centerY ] <|
                 text "main content"
         ]
 
