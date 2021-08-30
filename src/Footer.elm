@@ -4,6 +4,8 @@ import Element exposing (..)
 import Element.Background as Background
 import Element.Border as Border
 import Element.Font as Font
+import Svg.Attributes as SvgAttr
+import SvgIcons.Smirk exposing (smirk)
 
 
 logo : Element msg
@@ -20,27 +22,26 @@ logo =
 
 footer : Element msg
 footer =
-    row
+    el
         [ width fill
-        , padding 10
-        , Background.color color.lightBlue
-        , Border.widthEach { top = 1, bottom = 0, left = 0, right = 0 }
-        , Border.color color.blue
+        , padding 25
+        , Background.color color.lightGrey
+        , Font.size 14
         ]
-        [ logo
-        , column [ alignRight, spacing 10 ]
-            [ el [ alignRight ] <| text "Services"
-            , el [ alignRight ] <| text "About"
-            , el [ alignRight ] <| text "Contact"
+    <|
+        row
+            [ centerX, centerY ]
+            [ el [] <| text "footer made in elm-ui"
+            , el [ paddingEach { top = 0, right = 0, bottom = 0, left = 5 } ] <|
+                smirk [ SvgAttr.width "14", SvgAttr.height "14" ]
             ]
-        ]
 
 
 color =
     { blue = rgb255 0x72 0x9F 0xCF
     , darkCharcoal = rgb255 0x2E 0x34 0x36
     , lightBlue = rgb255 0xC5 0xE8 0xF7
-    , lightGrey = rgb255 0xE0 0xE0 0xE0
+    , lightGrey = rgb255 0xFA 0xFA 0xFA
     , white = rgb255 0xFF 0xFF 0xFF
     , darkGrey = rgb255 0x67 0x67 0x67
     , navBtnHover = rgb255 0xCE 0xCE 0xCE

@@ -17,7 +17,7 @@ import Model exposing (Model)
 import Msg exposing (Msg(..))
 import Route exposing (Route)
 import Task
-import Topnav exposing (topNav, topNavDropdownRow)
+import Topnav exposing (topNav)
 import Url exposing (Url)
 import Url.Parser exposing ((</>), Parser, int, map, oneOf, s, top)
 import User exposing (User)

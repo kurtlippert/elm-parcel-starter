@@ -1,20 +1,124 @@
 module Content exposing (..)
 
+import Debug exposing (toString)
 import Element exposing (..)
 import Element.Background as Background
-import Element.Font as Font
+import Element.Border as Border
+import Element.Font as Font exposing (Font)
 import Model exposing (Model)
+
+
+type Id
+    = String
+
+
+type RowType
+    = First
+    | Second
+    | Third
+
+
+type Option
+    = OptionOne
+    | OptionTwo
+    | OptionThree
+
+
+type RowActions
+    = EditRow Id
+    | ViewRow Id
+    | DeleteRow Id
+
+
+type alias TestRow =
+    { rowNumber : Int
+    , id : String
+    , name : String
+    , rowType : RowType
+    , options : List Option
+    , floatNumber : Float
+
+    -- , rowActions : RowActions
+    }
+
+
+rowData : List TestRow
+rowData =
+    [ { rowNumber = 1, id = "first", name = "First", rowType = First, options = [ OptionOne, OptionTwo ], floatNumber = 0.75 }
+    , { rowNumber = 2, id = "second", name = "Second", rowType = Second, options = [ OptionThree, OptionTwo ], floatNumber = 3.05 }
+    , { rowNumber = 3, id = "third", name = "Third", rowType = Third, options = [ OptionOne ], floatNumber = -0.05 }
+    ]
+
+
+homeContent : Model -> Element msg
+homeContent model =
+    let
+        headerAttrs =
+            [ Font.bold
+
+            -- , Font.color color.bl
+            , Font.size 14
+            , Border.widthEach { bottom = 1, top = 0, left = 0, right = 0 }
+            , Border.color color.lightGrey
+            ]
+    in
+    table [ width shrink ]
+        { data = rowData
+        , columns =
+            [ { header = el headerAttrs <| el [ padding 10 ] <| text "#"
+              , width = fillPortion 2
+              , view = .rowNumber >> toString >> text >> el [ Font.size 14, padding 10 ]
+              }
+            , { header = el headerAttrs <| el [ padding 10 ] <| text "ID"
+              , width = fillPortion 2
+              , view = .id >> text >> el [ Font.size 14, padding 10 ]
+              }
+            , { header = el headerAttrs <| el [ padding 10 ] <| text "Name"
+              , width = fillPortion 2
+              , view = .name >> text >> el [ Font.size 14, padding 10 ]
+              }
+            , { header = el headerAttrs <| el [ padding 10 ] <| text "Row Type"
+              , width = fillPortion 2
+              , view = .rowType >> toString >> text >> el [ Font.size 14, padding 10 ]
+              }
+            , { header = el headerAttrs <| el [ padding 10 ] <| text "Options"
+              , width = fillPortion 2
+              , view = .options >> toString >> text >> el [ Font.size 14, padding 10 ]
+              }
+            , { header = el headerAttrs <| el [ padding 10 ] <| text "Float #"
+              , width = fillPortion 2
+              , view = .floatNumber >> toString >> text >> el [ Font.size 14, padding 10 ]
+              }
+            ]
+        }
 
 
 content : Model -> Element msg
 content model =
-    row [ width fill, height fill ]
-        [ -- [ el [ width <| px model.screenWidth, height <| px 200, Background.color color.lightBlue ] <|
-          --     el [ alignRight, width <| px 50, height <| px 150, Background.color color.gainsboro ] <|
-          --         text "first"
-          el [ width fill, height <| px 200, Background.color color.white ] <|
-            el [ centerX, centerY ] <|
-                text "main content"
+    row [ width fill, height fill, padding 10, spacing 10 ]
+        [ column
+            [ width <| px 100
+            , height fill
+            , Font.size 16
+            , paddingXY 10 0
+            , Font.bold
+            , Border.widthEach { right = 2, left = 0, top = 0, bottom = 0 }
+            , Border.color <| rgb255 0xE0 0xE0 0xE0
+            ]
+            -- pixel heights for elements are needed to work around a bug in Safari
+            [ el [ alignTop, paddingEach { top = 0, right = 0, bottom = 5, left = 0 } ] <|
+                text "Gallery"
+            , el [ alignTop, paddingXY 0 5 ] <| text "About"
+            , el [ alignTop, paddingXY 0 5 ] <| text "Settings"
+            , el [ alignBottom, paddingXY 0 5 ] <| text "Logout"
+            ]
+        , homeContent
+            model
+
+        -- , textColumn [ width fill, height fill, spacing 20, scrollbarY, paddingXY 10 0, Font.size 16 ]
+        --     [ paragraph [] [ text "Content1" ]
+        --     , paragraph [] [ text "Content2" ]
+        --     ]
         ]
 
 

@@ -5,13 +5,14 @@ import Button exposing (button)
 import Element exposing (..)
 import Element.Background as Background
 import Element.Border exposing (shadow)
-import Element.Events exposing (onClick, onLoseFocus, onMouseEnter, onMouseLeave)
+import Element.Events exposing (onClick, onLoseFocus)
 import Element.Font as Font
 import Element.Input as Input
+import Html.Attributes exposing (style)
 import Model exposing (Model)
 import Msg exposing (Msg(..))
 import Svg.Attributes as SvgAttr
-import SvgIcons.CurvedDown exposing (curvedDown)
+import SvgIcons.RoundedDown exposing (roundedDown)
 
 
 topNav : Model -> Element Msg
@@ -26,42 +27,25 @@ topNav model =
         , Element.width fill
         , centerX
         , Background.color color.white
-        , shadow { offset = ( 0, 10 ), size = -1, blur = 15, color = color.dropShadow }
+
+        -- , shadow { offset = ( 0, 10 ), size = -1, blur = 15, color = color.dropShadow }
         ]
         [ Input.button
             [ alignLeft
-            , Element.paddingXY 20 20
+            , Element.paddingXY 20 21
             , Font.semiBold
             , focused
                 [ Background.color color.white ]
             ]
             { onPress = Just (NavigateTo "/"), label = text "Elm Parcel Starter" }
-        , button [ paddingXY 10 20 ] (text "Home") (NavigateTo "/")
-        , button [ paddingXY 10 20 ] (text "About") (NavigateTo "/about")
-        , button [ paddingXY 10 20 ] (text "Users") (NavigateTo "/users")
+        , button [ paddingXY 10 21 ] (text "Home") (NavigateTo "/")
+        , button [ paddingXY 10 21 ] (text "About") (NavigateTo "/about")
+        , button [ paddingXY 10 21 ] (text "Users") (NavigateTo "/users")
         , el
-            [ Element.below <|
-                el
-                    [ alignLeft
-                    , Element.width <| px 150
-                    , paddingXY 0 10
-                    , Background.color color.white
-                    , shadow { offset = ( 0, 10 ), size = -1, blur = 15, color = color.dropShadow }
-                    , Element.Border.widthEach { top = 2, right = 0, bottom = 0, left = 0 }
-                    , Element.Border.solid
-                    , Element.Border.color <| rgb255 0xDF 0xDF 0xDF
-                    , transparent <| not model.moreDropdownActive
-                    ]
-                <|
-                    column [ Element.width fill ]
-                        [ button [ Font.size 16, paddingXY 10 10, Element.width fill ] (text "First Element") NoOp
-                        , button [ Font.size 16, paddingXY 10 10, Element.width fill ] (text "Second Element") NoOp
-                        , button [ Font.size 16, paddingXY 10 10, Element.width fill ] (text "Third Element") NoOp
-                        ]
-            ]
+            [ Element.below <| moreDropdown model ]
             (button
                 [ alignRight
-                , paddingXY 10 10
+                , paddingXY 10 17
                 , onLoseFocus <| ShowMoreDropdown False
                 , onClick <| ShowMoreDropdown <| not model.moreDropdownActive
                 ]
@@ -70,63 +54,16 @@ topNav model =
                     [ text "More"
                     , el
                         [ paddingEach { top = 3, right = 0, bottom = 0, left = 5 } ]
-                        (curvedDown <| [ SvgAttr.fill "#483fc7" ])
+                        (roundedDown <| [ SvgAttr.fill "#483fc7" ])
                     ]
                 )
                 NoOp
             )
         , el
-            [ Element.below <|
-                el
-                    [ alignLeft
-                    , Element.width <| px 250
-                    , paddingXY 0 10
-                    , Background.color color.white
-                    , moveLeft 178
-                    , shadow { offset = ( 0, 10 ), size = -1, blur = 15, color = color.dropShadow }
-                    , Element.Border.widthEach { top = 2, right = 0, bottom = 0, left = 0 }
-                    , Element.Border.solid
-                    , Element.Border.color <| rgb255 0xDF 0xDF 0xDF
-                    , transparent <| not model.loginActive
-                    ]
-                <|
-                    column [ Element.width fill ]
-                        [ el
-                            [ Font.size 13
-                            , paddingXY 10 10
-                            , Element.width fill
-                            ]
-                            (Input.text [ Element.width <| maximum 300 fill ]
-                                { onChange = TypedUsername
-                                , text = model.userNameText
-                                , label = Input.labelHidden "username"
-                                , placeholder = Just <| Input.placeholder [] <| text "Username"
-                                }
-                            )
-                        , el
-                            [ Font.size 13
-                            , paddingXY 10 10
-                            , Element.width fill
-                            ]
-                            (Input.text [ Element.width <| maximum 300 fill ]
-                                { onChange = TypedPassword
-                                , text = model.passwordText
-                                , label = Input.labelHidden "password"
-                                , placeholder = Just <| Input.placeholder [] <| text "Password"
-                                }
-                            )
-                        , Input.checkbox [ Font.size 13, paddingXY 10 10 ]
-                            { onChange = ToggleShowPassword
-                            , icon = Input.defaultCheckbox
-                            , checked = model.showPassword
-                            , label = Input.labelRight [] <| text "Show password"
-                            }
-                        ]
-            , alignRight
-            ]
+            [ Element.below (loginDropdown model), alignRight ]
             (button
                 [ alignRight
-                , paddingXY 10 20
+                , paddingXY 10 21
                 , onClick <| ShowLogin <| not model.loginActive
                 ]
                 (row [] [ text "Log In" ])
@@ -135,17 +72,80 @@ topNav model =
         ]
 
 
-topNavDropdownRow : Model -> Element Msg
-topNavDropdownRow model =
+moreDropdown model =
     el
-        [ Element.width <| px 300
-        , height <| px 150
-        , alignRight
-        , Background.color <| color.blue
+        [ alignLeft
+        , Element.width <| px 150
+        , paddingXY 0 10
+        , Background.color color.white
+        , shadow { offset = ( 0, 10 ), size = -1, blur = 15, color = color.dropShadow }
+        , Element.Border.widthEach { top = 2, right = 0, bottom = 0, left = 0 }
+        , Element.Border.solid
+        , Element.Border.color <| rgb255 0xDF 0xDF 0xDF
+        , transparent <| not model.moreDropdownActive
         ]
     <|
-        el [ centerX, centerY ] <|
-            text "Left"
+        column [ Element.width fill ]
+            [ button [ Font.size 14, paddingXY 10 10, Element.width fill ] (text "First Element") NoOp
+            , button [ Font.size 14, paddingXY 10 10, Element.width fill ] (text "Second Element") NoOp
+            , button [ Font.size 14, paddingXY 10 10, Element.width fill ] (text "Third Element") NoOp
+            ]
+
+
+loginDropdown model =
+    el
+        [ alignLeft
+        , Element.width <| px 250
+        , paddingXY 0 10
+        , Background.color color.white
+        , moveLeft 179
+        , shadow { offset = ( 0, 10 ), size = -1, blur = 15, color = color.dropShadow }
+        , Element.Border.widthEach { top = 2, right = 0, bottom = 0, left = 0 }
+        , Element.Border.solid
+        , Element.Border.color <| rgb255 0xDF 0xDF 0xDF
+        , Element.htmlAttribute
+            (style "visibility"
+                (if model.loginActive then
+                    "visible"
+
+                 else
+                    "hidden"
+                )
+            )
+        ]
+    <|
+        column [ Element.width fill ]
+            [ el
+                [ Font.size 13
+                , paddingXY 10 10
+                , Element.width fill
+                ]
+                (Input.text [ Element.width <| maximum 300 fill ]
+                    { onChange = TypedUsername
+                    , text = model.userNameText
+                    , label = Input.labelHidden "username"
+                    , placeholder = Just <| Input.placeholder [] <| text "Username"
+                    }
+                )
+            , el
+                [ paddingXY 10 10
+                , Element.width fill
+                ]
+                (Input.newPassword [ Element.width <| maximum 300 fill, Font.size 13 ]
+                    { onChange = TypedPassword
+                    , text = model.passwordText
+                    , label = Input.labelHidden "password"
+                    , placeholder = Just <| Input.placeholder [] <| text "Password"
+                    , show = model.showPassword
+                    }
+                )
+            , Input.checkbox [ Font.size 13, paddingXY 10 10 ]
+                { onChange = ToggleShowPassword
+                , icon = Input.defaultCheckbox
+                , checked = model.showPassword
+                , label = Input.labelRight [] <| text "Show password"
+                }
+            ]
 
 
 color =
