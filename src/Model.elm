@@ -3,6 +3,7 @@ module Model exposing (..)
 import Browser.Navigation exposing (Key)
 import Debounce exposing (Debounce)
 import HttpRequest exposing (HttpRequest)
+import Route exposing (Route)
 import Url exposing (Url)
 import User exposing (User)
 

@@ -38,9 +38,9 @@ topNav model =
                 [ Background.color color.white ]
             ]
             { onPress = Just (NavigateTo "/"), label = text "Elm Parcel Starter" }
-        , button [ paddingXY 10 21 ] (text "Home") (NavigateTo "/")
         , button [ paddingXY 10 21 ] (text "About") (NavigateTo "/about")
         , button [ paddingXY 10 21 ] (text "Users") (NavigateTo "/users")
+        , button [ paddingXY 10 21 ] (text "Demo") (NavigateTo "/demo")
         , el
             [ Element.below <| moreDropdown model ]
             (button

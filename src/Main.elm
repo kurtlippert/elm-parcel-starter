@@ -7,7 +7,7 @@ import Browser.Events exposing (onResize)
 import Browser.Navigation as Nav exposing (Key)
 import Content exposing (content)
 import Debounce
-import Element exposing (column, fill, height, layout, width)
+import Element exposing (Element, centerX, centerY, column, el, fill, height, layout, padding, text, width)
 import Footer exposing (footer)
 import Http
 import HttpRequest
@@ -15,7 +15,7 @@ import Json.Decode exposing (Decoder)
 import Json.Encode
 import Model exposing (Model)
 import Msg exposing (Msg(..))
-import Route exposing (Route)
+import Route exposing (Route(..))
 import Task
 import Topnav exposing (topNav)
 import Url exposing (Url)
@@ -93,6 +93,7 @@ routeParser =
         [ map Route.Home top
         , map Route.About (s "about")
         , map Route.Users (s "users")
+        , map Route.Demo (s "demo")
         , map Route.UserRoute (s "users" </> int)
         ]
 
@@ -336,14 +337,37 @@ subscriptions _ =
     onResize (\w h -> GotNewWidth w)
 
 
+router : Model -> Element msg
+router model =
+    case fromUrl model.url of
+        About ->
+            el [ padding 20, centerX, centerY ] <| text "about"
+
+        Users ->
+            el [ padding 20, centerX, centerY ] <| text "users"
+
+        Demo ->
+            content model
+
+        NotFound ->
+            el [ padding 20, centerX, centerY ] <| text "Not Found"
+
+        _ ->
+            el [ padding 20, centerX, centerY ] <| text "generic"
+
+
 view : Model -> Browser.Document Msg
 view model =
+    let
+        _ =
+            Debug.log "URL" model.url
+    in
     { title = "Elm Parcel Starter"
     , body =
         [ layout [ width fill, height fill ] <|
             column [ width fill ]
                 [ topNav model
-                , content model
+                , router model
                 , footer
                 ]
         ]
