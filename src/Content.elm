@@ -62,7 +62,7 @@ homeContent model =
             , Border.color color.lightGrey
             ]
     in
-    table [ width shrink ]
+    table [ width fill, centerX ]
         { data = rowData
         , columns =
             [ { header = el headerAttrs <| el [ padding 10 ] <| text "#"
@@ -107,8 +107,8 @@ content model =
             ]
             -- pixel heights for elements are needed to work around a bug in Safari
             [ el [ alignTop, paddingEach { top = 0, right = 0, bottom = 5, left = 0 } ] <|
-                text "Gallery"
-            , el [ alignTop, paddingXY 0 5 ] <| text "About"
+                text "Table"
+            , el [ alignTop, paddingXY 0 5 ] <| text "Card"
             , el [ alignTop, paddingXY 0 5 ] <| text "Settings"
             , el [ alignBottom, paddingXY 0 5 ] <| text "Logout"
             ]
