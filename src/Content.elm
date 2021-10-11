@@ -1,11 +1,16 @@
 module Content exposing (..)
 
+import Button exposing (button, button3)
 import Debug exposing (toString)
 import Element exposing (..)
 import Element.Background as Background
 import Element.Border as Border
 import Element.Font as Font exposing (Font)
+import Element.Input exposing (focusedOnLoad)
+import Html.Attributes exposing (href)
 import Model exposing (Model)
+import Msg exposing (Msg(..))
+import Route exposing (Route(..), fromUrl, routeParser)
 
 
 type Id
@@ -50,13 +55,11 @@ rowData =
     ]
 
 
-homeContent : Model -> Element msg
+homeContent : Model -> Element Msg
 homeContent model =
     let
         headerAttrs =
             [ Font.bold
-
-            -- , Font.color color.bl
             , Font.size 14
             , Border.widthEach { bottom = 1, top = 0, left = 0, right = 0 }
             , Border.color color.lightGrey
@@ -87,33 +90,53 @@ homeContent model =
               }
             , { header = el headerAttrs <| el [ padding 10 ] <| text "Float #"
               , width = fillPortion 2
-              , view = .floatNumber >> toString >> text >> el [ Font.size 14, padding 10 ]
+              , view = .floatNumber >> toString >> text >> el [ Font.size 14, padding 10, Font.alignRight ]
               }
             ]
         }
 
 
-content : Model -> Element msg
-content model =
+demoControl : Model -> String -> Element Msg
+demoControl model demoRoute =
+    case demoRoute of
+        "" ->
+            homeContent model
+
+        "table" ->
+            homeContent model
+
+        "card" ->
+            el [ centerX, centerY, padding 50 ] <| text "Card demo"
+
+        "game" ->
+            el [ centerX, centerY, padding 50 ] <| text "Game demo"
+
+        _ ->
+            el [ centerX, centerY, padding 50 ] <| text "Demo not found"
+
+
+content : Model -> String -> Element Msg
+content model demoRoute =
     row [ width fill, height fill, padding 10, spacing 10 ]
         [ column
             [ width <| px 100
             , height fill
-            , Font.size 16
+            , Font.size 14
             , paddingXY 10 0
-            , Font.bold
             , Border.widthEach { right = 2, left = 0, top = 0, bottom = 0 }
             , Border.color <| rgb255 0xE0 0xE0 0xE0
             ]
-            -- pixel heights for elements are needed to work around a bug in Safari
-            [ el [ alignTop, paddingEach { top = 0, right = 0, bottom = 5, left = 0 } ] <|
-                text "Table"
-            , el [ alignTop, paddingXY 0 5 ] <| text "Card"
-            , el [ alignTop, paddingXY 0 5 ] <| text "Settings"
-            , el [ alignBottom, paddingXY 0 5 ] <| text "Logout"
+            [ button3
+                [ alignTop
+                , paddingEach { top = 0, right = 0, bottom = 5, left = 0 }
+                ]
+                (text "Table")
+                (NavigateTo "/demo/table")
+            , button3 [ alignTop, paddingXY 0 5 ] (text "Card") (NavigateTo "/demo/card")
+            , button3 [ alignTop, paddingXY 0 5 ] (text "Game") (NavigateTo "/demo/game")
+            , button3 [ alignBottom, paddingXY 0 5 ] (text "Logout") NoOp
             ]
-        , homeContent
-            model
+        , demoControl model demoRoute
 
         -- , textColumn [ width fill, height fill, spacing 20, scrollbarY, paddingXY 10 0, Font.size 16 ]
         --     [ paragraph [] [ text "Content1" ]

@@ -8,6 +8,29 @@ import Element.Input as Input
 import Msg exposing (Msg(..))
 
 
+button3 : List (Attribute Msg) -> Element Msg -> Msg -> Element Msg
+button3 moreAttributes element msg =
+    Input.button
+        (List.concat
+            [ moreAttributes
+            , [ mouseOver
+                    [ Font.color color.navTextHover
+                    ]
+              , focused
+                    [ Background.color color.white, Font.color color.navTextHover ]
+              ]
+            ]
+        )
+        { onPress = Just msg, label = element }
+
+
+button2 : List (Attribute Msg) -> Element Msg -> Msg -> Element Msg
+button2 moreAttributes element msg =
+    Input.button
+        (List.concat [ moreAttributes, [] ])
+        { onPress = Just msg, label = element }
+
+
 button : List (Attribute Msg) -> Element Msg -> Msg -> Element Msg
 button moreAttributes element msg =
     Input.button

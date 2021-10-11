@@ -7,6 +7,7 @@ import Browser.Events exposing (onResize)
 import Browser.Navigation as Nav exposing (Key)
 import Content exposing (content)
 import Debounce
+import Debug exposing (toString)
 import Element exposing (Element, centerX, centerY, column, el, fill, height, layout, padding, text, width)
 import Footer exposing (footer)
 import Http
@@ -15,11 +16,11 @@ import Json.Decode exposing (Decoder)
 import Json.Encode
 import Model exposing (Model)
 import Msg exposing (Msg(..))
-import Route exposing (Route(..))
+import Route exposing (Route(..), fromUrl, routeParser)
 import Task
 import Topnav exposing (topNav)
 import Url exposing (Url)
-import Url.Parser exposing ((</>), Parser, int, map, oneOf, s, top)
+import Url.Parser exposing ((</>), Parser, int, map, oneOf, s, string, top)
 import User exposing (User)
 
 
@@ -85,22 +86,6 @@ init flags url key =
 
 
 -- HELPERS
-
-
-routeParser : Parser (Route -> a) a
-routeParser =
-    oneOf
-        [ map Route.Home top
-        , map Route.About (s "about")
-        , map Route.Users (s "users")
-        , map Route.Demo (s "demo")
-        , map Route.UserRoute (s "users" </> int)
-        ]
-
-
-fromUrl : Url -> Route
-fromUrl url =
-    Maybe.withDefault Route.NotFound (Url.Parser.parse routeParser url)
 
 
 getUsersRequest : Int -> Int -> String -> Cmd Msg
@@ -337,7 +322,7 @@ subscriptions _ =
     onResize (\w h -> GotNewWidth w)
 
 
-router : Model -> Element msg
+router : Model -> Element Msg
 router model =
     case fromUrl model.url of
         About ->
@@ -347,7 +332,10 @@ router model =
             el [ padding 20, centerX, centerY ] <| text "users"
 
         Demo ->
-            content model
+            content model ""
+
+        DemoControl controlName ->
+            content model controlName
 
         NotFound ->
             el [ padding 20, centerX, centerY ] <| text "Not Found"

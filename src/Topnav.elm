@@ -1,10 +1,10 @@
 module Topnav exposing (..)
 
 import Browser exposing (UrlRequest(..))
-import Button exposing (button)
+import Button exposing (button, button2)
 import Element exposing (..)
 import Element.Background as Background
-import Element.Border exposing (shadow)
+import Element.Border exposing (rounded, shadow)
 import Element.Events exposing (onClick, onLoseFocus)
 import Element.Font as Font
 import Element.Input as Input
@@ -145,6 +145,17 @@ loginDropdown model =
                 , checked = model.showPassword
                 , label = Input.labelRight [] <| text "Show password"
                 }
+            , el [ paddingEach { top = 5, right = 10, bottom = 0, left = 10 } ] <|
+                button2
+                    [ padding 10
+                    , Font.size 13
+                    , Element.Border.solid
+                    , Element.Border.width 1
+                    , Element.Border.color (rgb255 0xC2 0xC5 0xBF)
+                    , rounded 3
+                    ]
+                    (text "Submit")
+                    NoOp
             ]
 
 
